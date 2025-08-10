@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Workbench Whiteboard Prototype</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/konva@8/konva.min.js"></script>
+</head>
+<body>
+  <div id="app">
+    <aside id="toolbar">
+      <button class="tool" id="selectTool" title="Select / Move">Select</button>
+      <button class="tool" id="stickyTool" title="Add sticky note">Sticky</button>
+      <button class="tool" id="arrowTool" title="Connect nodes with flexible arrow">Connect</button>
+      <div class="shapeMenu">
+        <button class="tool" id="shapeBtn" title="Shapes">Shapes ▾</button>
+        <div id="shapesList" class="shapesList">
+          <button class="shapeItem" data-shape="rect">Rectangle</button>
+          <button class="shapeItem" data-shape="circle">Circle</button>
+          <button class="shapeItem" data-shape="diamond">Diamond</button>
+          <button class="shapeItem" data-shape="star">Star</button>
+          <button class="shapeItem" data-shape="triangle">Triangle</button>
+          <button class="shapeItem" data-shape="speech">Speech</button>
+        </div>
+      </div>
+      <hr/>
+      <button id="undoBtn">Undo</button>
+      <button id="delBtn">Delete</button>
+      <button id="fitBtn">Fit</button>
+      <hr/>
+      <button id="exportBtn">Export JSON</button>
+      <input type="file" id="importFile" accept=".json" style="display:none" />
+      <button id="importBtn">Import JSON</button>
+      <button id="clearBtn">Clear</button>
+    </aside>
+
+    <main id="canvasWrap">
+      <div id="container"></div>
+      <!-- overlay textarea for editing sticky text -->
+      <textarea id="textEditor" style="display:none;position:absolute;"></textarea>
+    </main>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
