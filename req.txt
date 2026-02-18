@@ -1,0 +1,374 @@
+Below is the **complete end‑to‑end requirement** captured in *“VicGrid IAM Success Factors to GIPS Connector (Integration Suite)”* — including **scope, interfaces, parameters, data fields, selection rules, business rules, security, sequencing/cutover assumptions, and all open points/comments**. I’m not skipping anything that is stated in the file. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+***
+
+## 1) Purpose / Goal (What this integration must achieve)
+
+### Primary objective
+
+*   Implement a **connector at VicGrid** to provide **employee-related data** from **SAP SuccessFactors Employee Central (EC)** to the **Government Identity Provisioning System (GIPS)**, to support **Identity Lifecycle Processes** and **IT account provisioning**. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+### What SuccessFactors must provide to GIPS
+
+SuccessFactors (via Integration Suite) will transfer to GIPS:
+
+*   **Employee Data**
+*   **Location Data**
+*   **VicGrid Organisational Structure** [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+### What GIPS maintains back in SuccessFactors user profile
+
+GIPS will maintain the following in the **SuccessFactors user profile**:
+
+*   **User Id**
+*   **Email Address** [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+***
+
+## 2) Systems / Components involved (End-to-end landscape)
+
+### Systems named in the design
+
+*   **SAP SuccessFactors (SF) / Employee Central (EC)** as source/master for HR data [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   **SAP Integration Suite** (document also refers to “SF Integration Suite” / “SCPI”) hosting **custom REST web services** [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   **GIPS** (Government Identity Provisioning System) as consumer for HR data and generator of identifiers [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   **VicGrid Entra ID / Active Directory** referenced in the overview diagram context as target identity systems supported by GIPS lifecycle processes [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+### High-level integration pattern
+
+*   **Outbound** (SF → Integration Suite → GIPS): Custom REST APIs that expose simplified employee/org/location data (so GIPS doesn’t traverse the SF OData graph itself). [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   **Inbound / Writeback** (GIPS → Integration Suite → SF OData): Additional REST service enabling GIPS-driven updates into EC profile fields (email/IDs). [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+***
+
+## 3) Core assumptions (Must be built/operated this way)
+
+*   Data sets provided will be **Full extracts or Delta extracts**, depending on input parameters. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   Data provided will be **“raw” SAP data**; **any transformations must occur in GIPS** (i.e., don’t enrich/transform in Integration Suite except what’s explicitly stated as business logic defaults). [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+***
+
+## 4) Security / Authentication / Controls (Non-negotiable)
+
+*   All APIs must be protected using **certificate-based authentication** between **GIPS and SAP SCPI / Integration Suite**. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   Use **X.509 certificates** (Java keystore format). [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   **SCPI root certificate** must be imported into **GIPS system keystore**. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   GIPS must provide a **CA-signed certificate**. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+***
+
+## 5) Outbound APIs (Integration Suite → GIPS)
+
+These are the **custom REST web services** GIPS calls to obtain data.
+
+### 5.1 Common API behavior & input parameters
+
+For **each web service**, the input parameters are: [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+1.  **FullExtract**: `Y` or `N`
+    *   `N` is **default** and **requires** `ExtractFromDate` [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+2.  **ExtractFromDate**: **DateTime stamp**
+    *   Used to retrieve changes from that timestamp **to current DateTime**
+    *   GIPS is expected to **store the last retrieved timestamp** [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+### Why custom APIs are required
+
+*   To simplify how employee data is presented to GIPS.
+*   To avoid GIPS needing to traverse the **SF OData graph** and implement traversal logic. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+***
+
+## 6) Outbound API #1 — Employee Data service
+
+### 6.1 Employee fields to be extracted (as REST output)
+
+The design lists these SF attributes/fields to be provided to GIPS (field name + meaning/type as stated). [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+**Identity / org / job**
+
+*   Company (String) [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   EmployeeId (String) [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   manager-id = SF Manager User Id (String) [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   Manager-position-id = SF Manager Position Id (String) [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   position-code = Position Id (String) [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   positionTitle = Position Title (String) [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   Organisation Unit Id = Organisation Unit Id (String) [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   Location id = Location Id (String) [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+**Personal**
+
+*   first-name (String) [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   middle-name (String) [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   last-name (String) [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   preferred-name (String) [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   Previous-family-name (String) [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   Salutation (Picklist) [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   Suffix (String) [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   date-of-birth (Date) [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   gender (String) [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+**Employment**
+
+*   start-date = Agency Start Date (Date) [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   end-date = Termination Date (Date) [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   employment-type (String) [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   employment-class (String) [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   engagement term (listed) [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   contract-type = Engagement Type (Picklist) (noted as equivalent) [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   contract-end-date = Expected End Date (only required for fixed terms) (Date) [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+**Contact**
+
+*   FAX = Business Fax (String) [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   business-phone-type (Picklist) — can appear multiple times; interface phone types:
+    1.  Business
+    2.  Phone
+    3.  Mobile [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   business-phone-number (String) [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+**Other**
+
+*   HR of employee = Human Resources (String) [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   WoVG Employee Identifier (String) [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+> Note: The doc contains a comment about “Strike Through attributes (unavailable in Vic Grid SF)” needing confirmation (BP1). [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+***
+
+### 6.2 Employee selection criteria (Full and Delta rules)
+
+#### Full extract selection (who must be included)
+
+Employee selection includes: [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+*   **New hires** (Start Date in the **future**)
+*   **Terminated users** (Termination Date in the **past**)
+*   **Current employees**
+
+#### Delta extract selection (who must be included)
+
+For deltas, identify employees who meet any of these conditions since last run: [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+*   Changes in **any fields listed** in Employee Data effective as of the **last run date**
+*   **Manager change** since last run date
+*   **Job changes or terminations** since last run date with rules:
+    *   If effective date is **future** → **do not extract now**
+    *   If effective date is **current/past** → **extract now**
+*   **Hiring event**: data **will be extracted for future hires** (explicit exception vs general “future do not extract” rule) [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   If hiring/termination happened in past and effective change date equals last run date → **extract** [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+***
+
+### 6.3 Employee business logic rules (field-level)
+
+The document mandates these explicit rules: [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+1.  **Date of Birth**
+    *   Always default to constant **01/01/1900** [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+2.  **Gender**
+    *   Always default to constant **“Not Supplied”** [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+    *   There are comments questioning impacts/behaviors and asking for a single chosen value (BP3, BP4). [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+3.  **Employment Type mapping**
+    *   Must map into exactly one of: **Executive, Contingent, Fixed-Term, Ongoing** [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+    *   The source EC field and mapping logic is **“still to be confirmed”** [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+4.  **Employee Class mapping**
+    *   Must map into exactly one of: **Full Time, Part Time** [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+    *   The doc lists the configured EC employee groups/subgroups, and includes a comment questioning if required (BP7). [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+5.  **Fixed term vs ongoing rule using Employee Group**
+    *   Employees in **Group A** are **“Ongoing”**
+    *   **Everyone else** is **“Fixed Term”** [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+6.  **Organisation Unit Id**
+    *   Should be the value of the object where the employee’s position belongs.
+    *   Because position always has **Division** and **Business Unit** populated, GIPS will **always be provided Business Unit ID**. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+7.  **Termination Date behavior**
+    *   If termination date is **future** → populate termination date **only on the termination date** [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+    *   If termination done **retrospectively** → termination date sent **in the next run** [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+    *   New hires will **not** be given systems access until their **start date** [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+    *   There are explicit open questions about whether terminated users should remain in feed or drop off (BP5, BP6). [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+***
+
+## 7) Outbound API #2 — Organisational Structure service
+
+### 7.1 What must be interfaced
+
+*   VicGrid org structure must be interfaced via **REST web services**. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+### 7.2 Cutover and sequencing requirements
+
+*   During cutover, GIPS calls org structure service in **full mode** to refresh entire structure. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   **Org structure must be available in GIPS before any employee extracts are executed.** [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   After cutover, GIPS calls in **delta mode** for updates only. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+### 7.3 Constraints / operating model for restructures
+
+The design assumes EC remains the master and the following will apply: [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+*   Re-organisations (changes to existing structures) may **fail** when GIPS processes them. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   The business must follow the process of raising **Service Requests** for structural changes. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   GIPS can process:
+    *   changes to **descriptions** [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+    *   adding **leaves to branches** [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+    *   structural changes **only if** Service Request is processed **before** SAP change/integration [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   For major restructure, GIPS will call **full mode** after **purging/delimiting** existing org structure on their end. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+### 7.4 Org structure model/entities
+
+Positions are associated with foundation objects:
+
+*   **Legal Entity, Division, Business Unit, Team** [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+### 7.5 Org structure fields to be sent
+
+For each org unit entity, send: [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+*   `externalCode` (Code, String) [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   `externalName` (Name, String) [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   `effectiveStartDate` (shown with description “Status”, Enum) [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   `effectiveStatus` (shown with description “Start Date”, Date) [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   `parentOU` (Parent Unit, String) [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+> Note: In the document, the “effectiveStartDate/effectiveStatus” descriptions appear swapped (Status vs Start Date). This is not clarified further but is exactly how it is printed. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+***
+
+## 8) Outbound API #3 — Locations Data service
+
+### 8.1 Location fields to extract
+
+“All HR locations effective on current date” are extracted, with these fields and CSV headings. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+*   `externalCode` → externalCode [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   `name.defaultValue` → name.defaultValue [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   `effectiveStatus` → effectiveStatus [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   `effectiveStartDate` → effectiveStartDate [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   `Country` (Generic Object) → Country [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   Address Line 1 → Address\_Line\_1 [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   Address Line 2 → Address\_Line\_2 [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   Address Line 3 → Address\_Line\_3 [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   City → City [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   State (Picklist) → State [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   Postal Code → Postal Code [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+### 8.2 Selection criteria for locations
+
+*   **All HR locations effective on the current date** are included. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+### 8.3 Reference data behavior (picklists/codes)
+
+*   Drop-down configured values are sent as **code (key)** and **GIPS transforms** them. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+#### Salutation codes (to be sent as code)
+
+Examples listed: Dr, Miss, MR/Mr, MRS/Mrs, MS/Ms, Prof. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+*   There’s a comment noting this differs from another design (“DEECA”) and suggests consulting how current solution works (BP8), plus an action comment BP9. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+#### Phone Types codes (to be sent as code)
+
+Listed values: [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+*   `0020` = Work Telephone Number
+*   `CELL` = Work Mobile Number
+*   `MOB` = Personal mobile (**will not be included**)
+*   `TEL2` = Personal landline (**will not be included**)  
+    There is a “TBD” comment (BP10). [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+***
+
+## 9) Inbound API (GIPS → Integration Suite → SuccessFactors OData) — Writeback service
+
+### 9.1 Purpose
+
+Deploy an additional REST web service to allow GIPS to **update profile fields within Employee Central**. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+Key point:
+
+*   The service is **called by GIPS**; it **will not poll GIPS** for new user id generation. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+### 9.2 Process steps (as described)
+
+1.  **User id, email address, WoVG Id** generated in **GIPS**. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+2.  GIPS connects to **SAP SuccessFactors OData API** to update:
+    *   email address
+    *   SoE Id
+    *   WoVG Id [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+3.  WoVG Id stored in EC in “WoVG user id” with assumption it may become the WoVG user id in future; design may change depending on Victorian Government strategy. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+4.  Separate call from GIPS to **SCPI** for this request; input parameters include employee id, email address and SOE id. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+5.  Authentication to OData API is **certificate-based**; once authenticated, EC record is updated. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+### 9.3 Inbound API data fields (payload definition)
+
+The inbound “Position Data” table defines: [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+*   `EMPID` (Employee Id, String, 255) [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   Business Email Id (String, 255)
+    *   Clarification: business email updated in EC as **work email**, **email type = 0010** [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   `WoVG Id` (String, 255) [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   `USERID` (User id, String, 100)   
+    There are comments BP11 “TBD” and BP12 about confirming why WoVG sync is required and expectation of pushing User ID. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+***
+
+## 10) End-to-end operational flow (What happens in what order)
+
+### A) Cutover / initial load
+
+1.  GIPS calls **Org Structure API** in **Full mode** → refresh full structure in GIPS. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+2.  Ensure org structure exists in GIPS **before** running employee extracts. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+3.  GIPS calls **Employee API** in **Full mode** → includes future hires, current employees, and terminated users. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+4.  GIPS calls **Location API** (selection = effective today). [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+### B) Daily/ongoing delta operations
+
+1.  GIPS calls Org Structure in **Delta mode** (subject to restructure/SR constraints). [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+2.  GIPS calls Employee API in **Delta mode** using **ExtractFromDate** with the last stored timestamp; apply delta selection rules (including special future-hire logic). [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+3.  GIPS calls Location API as needed (not explicitly defined as delta vs full; but selection is “effective today”). [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+### C) Identifier writeback (inbound)
+
+1.  GIPS generates **UserID / Email / WoVG Id (and SoE Id)**. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+2.  GIPS calls inbound REST service → Integration Suite → SF OData update using certificate authentication. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+***
+
+## 11) Explicit open points / clarifications in the document (Must not be missed)
+
+These are unresolved / action items embedded as comments:
+
+*   **BP1:** Confirm no issues/concerns with “strike-through attributes” (unavailable in VicGrid SF). [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   **BP2:** Contract-type is “equivalent to engagement type” (implied mapping). [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   **BP3/BP4:** Gender default: must pick one value; discuss impacts (MFA/behaviors) and why it is pushed. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   **BP5/BP6:** Terminated users feed behavior: Should terminated users stay included? Concern about them dropping off if termination not sent in later runs; confirm deletion/retention behavior in GIPS/AD. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   **Employment Type mapping:** source field + mapping to {Executive/Contingent/Fixed-Term/Ongoing} **still to be confirmed**. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   **BP7:** Employee group/subgroup mapping necessity unclear; discuss. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   **BP8/BP9:** Salutation reference data differs from “DEECA” design; consult/align and update. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   **BP10:** Phone type mapping/values “TBD”. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   **BP11/BP12:** Inbound API details “TBD” and confirm why WoVG sync / how UserID push should work with stakeholders. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+***
+
+## 12) What is NOT specified (gaps you must resolve during build)
+
+The document does **not** provide:
+
+*   Exact API endpoint URLs, resource paths, payload JSON schema examples, or response/error formats. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   Scheduling/frequency SLAs, retry strategy, pagination/volume limits. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   Explicit “delta logic” for Locations and Org Structure beyond “delta mode provides updates of org units.” [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+*   Definitive mapping rules for Employment Type and Employee Class beyond target values and partial rules. [\[VicGrid_IA..._Connector | PDF\]](https://people.ey.com/personal/namala_tharun_kumar_gds_ey_com/Documents/Microsoft%20Copilot%20Chat%20Files/VicGrid_IAM_SF_GIPS_IntegrationSuite_Connector.pdf)
+
+***
+
+# If you want, I can also convert this into:
+
+1.  **A clean integration requirement document** (BRD/FRD style)
+2.  **iFlow blueprint** (end-to-end CPI steps: sender/receiver adapters, cert auth setup, oData reads, transformations, delta filters, error handling)
+3.  **Field mapping sheet** (Employee/Org/Location + inbound writeback)
+
+Just tell me which format you prefer.
